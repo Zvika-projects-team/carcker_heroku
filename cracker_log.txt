@@ -1,0 +1,13 @@
+----------------start----------------
+
+Checking password length 1: min time 0.007998228073120117
+Checking password length 2: min time 0.006999969482421875
+Checking password length 3: min time 0.008999824523925781
+Checking password length 4: min time 0.00798940658569336
+Checking password length 5: min time 0.008998870849609375
+Checking password length 6: min time 0.009000301361083984
+Checking password length 7: min time 0.017000198364257812
+----------------end----------------
+
+----------------start----------------
+

